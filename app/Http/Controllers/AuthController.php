@@ -10,6 +10,42 @@ use Illuminate\Http\Response;
 
 class AuthController extends Controller
 {
+    /**
+     * @OA\Post(
+     *     path="/register",
+     *     summary="Registrar un nuevo usuario",
+     *     tags={"Autenticación"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"name","email","password"},
+     *             @OA\Property(property="name", type="string", example="Juan Pérez"),
+     *             @OA\Property(property="email", type="string", format="email", example="juan@example.com"),
+     *             @OA\Property(property="password", type="string", format="password", example="secreto123")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Usuario registrado correctamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Usuario registrado correctamente"),
+     *             @OA\Property(
+     *                 property="user",
+     *                 type="object",
+     *                 @OA\Property(property="id", type="integer", example=1),
+     *                 @OA\Property(property="name", type="string", example="Juan Pérez"),
+     *                 @OA\Property(property="email", type="string", example="juan@example.com"),
+     *                 @OA\Property(property="created_at", type="string", format="date-time", example="2024-06-01T12:00:00.000000Z"),
+     *                 @OA\Property(property="updated_at", type="string", format="date-time", example="2024-06-01T12:00:00.000000Z")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Datos de entrada inválidos"
+     *     )
+     * )
+     */
     public function register(Request $request)
     {
         $validated = $request->validate([
@@ -30,6 +66,34 @@ class AuthController extends Controller
         ], Response::HTTP_CREATED);
     }
 
+    /**
+     * @OA\Post(
+     *     path="/login",
+     *     summary="Iniciar sesión de usuario",
+     *     tags={"Autenticación"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"email","password"},
+     *             @OA\Property(property="email", type="string", format="email", example="juan@example.com"),
+     *             @OA\Property(property="password", type="string", format="password", example="secreto123")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Login exitoso",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Login exitoso"),
+     *             @OA\Property(property="token", type="string", example="1|XyZAbC1234567890token"),
+     *             @OA\Property(property="token_type", type="string", example="Bearer")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Credenciales inválidas"
+     *     )
+     * )
+     */
     public function login(Request $request)
     {
         $validated = $request->validate([
@@ -54,6 +118,25 @@ class AuthController extends Controller
         ]);
     }
 
+    /**
+     * @OA\Post(
+     *     path="/logout",
+     *     summary="Cerrar sesión de usuario",
+     *     tags={"Autenticación"},
+     *     security={{"sanctum":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Logout exitoso",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Logout exitoso")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="No autenticado"
+     *     )
+     * )
+     */
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();
