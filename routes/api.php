@@ -9,6 +9,10 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 Route::prefix('parkings')->group(function () {
+    // endpoint para buscar el parking más cercano a un punto dado
+    Route::get('/nearest', [ParkingController::class, 'nearest']);
+
+    // endpoints crud
     Route::get('/', [ParkingController::class, 'index']);
     Route::post('/', [ParkingController::class, 'store']);
     Route::get('/{id}', [ParkingController::class, 'show']);
